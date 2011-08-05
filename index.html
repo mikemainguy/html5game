@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>html5 game engine</title>
+    <style>
+        #functions {
+            border: #ffff00;
+        }
+
+        #canvas {
+            border: #ffff00 1px solid;
+            height: 600px;
+            width: 800px;
+        }
+
+        #codeform {
+
+        }
+    </style>
+</head>
+<body>
+<div>
+    <canvas id='canvas'>
+        This is the canvas
+    </canvas>
+    <div id='functions'>
+
+    </div>
+</div>
+<script src='./html5game/base.js' type="text/javascript"></script>
+<form id='codeform' name='codeform'>
+</form>
+<script>
+    var g = game('canvas');
+    var rnd = function(start){
+        return Math.floor(Math.random()*start);
+    }
+    g.entity({fillStyle:'#ff0000',x:10,y:10,w:10,h:10});
+    for (i = 0; i < 100; i++) {
+        g.entity({fillStyle:'#222222',x:rnd(300),y:rnd(300),w:rnd(5),h:rnd(5)});
+    }
+    g.draw();
+    var logic = function() {
+        for (i =1; i< g.entities.length; i++) {
+            g.entities[i].move_to(rnd(500),rnd(500),1);
+        }
+    }
+    setTimeout(function(){
+        window.alert('here');
+
+    },5000);
+    //logic();
+    document.addEventListener('keydown', kdown);
+    document.addEventListener('keyup', kup);
+
+
+    function kdown(e) {
+        document.title = e.keyCode;
+        var factor = 1.5;
+        with (g.entities[0]) {
+            switch (e.keyCode) {
+                case 37:
+                    move(-factor,0);
+                    break;
+                case 38:
+                    move(0,-factor);
+                    break
+                case 39:
+                    move(factor,0);
+                    break;
+                case 40:
+                    move(0,factor);
+                    break;
+            }
+        }
+
+    }
+    function kup(e) {
+        g.entities[0].direction = null;
+
+    }
+
+</script>
+
+</body>
+
+</html>
