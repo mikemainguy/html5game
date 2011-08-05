@@ -1,10 +1,3 @@
-function evalcode() {
-    tdata = document.getElementById('codewindow').value
-    eval(tdata)
-    return false;
-}
-
-
 var game = function(id) {
 
     var that = {};
@@ -18,7 +11,6 @@ var game = function(id) {
 
     that.context = me.canvas.getContext('2d');
     that.entities = [];
-
 
     that.clr = function() {
         that.context.save();
@@ -118,19 +110,4 @@ var game = function(id) {
 
     return that;
 
-
 }
-
-var my_each = function(callback) {
-
-    for (name in this) {
-        callback.call(this[name], this)
-    }
-
-}
-Array.prototype.ev = my_each;
-var test = [1,2];
-test.ev(function(n,v) {alert(n)});
-
-
-

@@ -59,28 +59,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="50" column="12" selection-start="1079" selection-end="1079" vertical-scroll-proportion="-3.987342">
+            <state line="57" column="33" selection-start="1257" selection-end="1257" vertical-scroll-proportion="0.6058733">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="jetty.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jetty.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="78" selection-start="621" selection-end="621" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="base.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="base.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/html5game/base.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="107" column="35" selection-start="2909" selection-end="2909" vertical-scroll-proportion="0.338843">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -101,8 +92,8 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/jetty.xml" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/html5game/base.js" />
+        <option value="$PROJECT_DIR$/index.html" />
       </list>
     </option>
   </component>
@@ -630,28 +621,16 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/jetty.xml">
+    <entry file="file://$PROJECT_DIR$/html5game/base.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="78" selection-start="621" selection-end="621" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/animator.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-10.645162">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="12" selection-start="1079" selection-end="1079" vertical-scroll-proportion="-3.987342">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/html5game/base.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="107" column="35" selection-start="2909" selection-end="2909" vertical-scroll-proportion="0.338843">
+        <state line="57" column="33" selection-start="1257" selection-end="1257" vertical-scroll-proportion="0.6058733">
           <folding />
         </state>
       </provider>

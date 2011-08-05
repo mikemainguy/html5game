@@ -40,16 +40,13 @@
         g.entity({fillStyle:'#222222',x:rnd(300),y:rnd(300),w:rnd(5),h:rnd(5)});
     }
     g.draw();
+
     var logic = function() {
         for (i =1; i< g.entities.length; i++) {
             g.entities[i].move_to(rnd(500),rnd(500),1);
         }
-    }
-    setTimeout(function(){
-        window.alert('here');
+    };
 
-    },5000);
-    //logic();
     document.addEventListener('keydown', kdown);
     document.addEventListener('keyup', kup);
 
