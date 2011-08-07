@@ -31,15 +31,23 @@ var game = function(id) {
 
 
     that.entity = function(data) {
+        if (!data.destination) {
+            data.destination = {};
+        }
+
         data.move = function(x, y) {
             data.direction = {x:x,y:y};
         }
+
         data.move_to = function(x, y, speed) {
-            data.destination = {x: me.interpolator(data.x, x, speed), y: me.interpolator(data.y, y, speed)};
+            data.destination.x = me.interpolator(data.x, x, speed);
+            data.destination.y = me.interpolator(data.y, y, speed);
         }
+
         data.rotate = function(new_angle, speed) {
-            data.destination = {rotation: me.interpolator(data.rotation, new_angle, speed)}
+            data.destination.rotation = me.interpolator(data.rotation, new_angle, speed);
         }
+
         that.entities.push(data);
         return data;
     }
