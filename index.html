@@ -36,20 +36,15 @@
         return Math.floor(Math.random()*start);
     }
     g.entity({fillStyle:'#ff0000',x:10,y:10,w:10,h:10});
-    for (i = 0; i < 100; i++) {
-        g.entity({fillStyle:'#222222',x:rnd(300),y:rnd(300),w:rnd(5),h:rnd(5)});
+    for (i = 0; i < 10; i++) {
+        g.entity({fillStyle:'#222222',x:rnd(600),y:rnd(600),w:rnd(10),h:rnd(10),rotation: rnd(2)/10});
     }
-    g.draw();
-
-    var logic = function() {
-        for (i =1; i< g.entities.length; i++) {
-            g.entities[i].move_to(rnd(500),rnd(500),1);
-        }
-    };
 
     document.addEventListener('keydown', kdown);
     document.addEventListener('keyup', kup);
-
+    /*for (j = 1; j < g.entities.length; j++) {
+        g.entities[j].move_to(rnd(500),rnd(500),rnd(100)/10);
+    } */
 
     function kdown(e) {
         document.title = e.keyCode;

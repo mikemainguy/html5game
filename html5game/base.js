@@ -8,6 +8,7 @@ var game = function(id) {
     me.canvas = document.getElementById(id);
     me.canvas.setAttribute('width', me.canvas.clientWidth);
     me.canvas.setAttribute('height', me.canvas.clientHeight);
+    me.degreeFactor = 3.14 / 180;
 
     that.context = me.canvas.getContext('2d');
     that.entities = [];
@@ -33,23 +34,27 @@ var game = function(id) {
         data.move = function(x, y) {
             data.direction = {x:x,y:y};
         }
-        data.move_to = function(x,y,speed) {
-            data.destination = {x: me.interpolator(data.x, x, speed), y: me.interpolator(data.y,y,speed)};
+        data.move_to = function(x, y, speed) {
+            data.destination = {x: me.interpolator(data.x, x, speed), y: me.interpolator(data.y, y, speed)};
+        }
+        data.rotate = function(new_angle, speed) {
+            data.destination = {rotation: me.interpolator(data.rotation, new_angle, speed)}
         }
         that.entities.push(data);
         return data;
     }
 
+
     me.interpolator = function(start, finish, speed) {
         var data = new Array();
         var inter = {};
-        var count = ((speed*1000)/me.clock);
-        var factor = (finish-start)/count;
+        var count = ((speed * 1000) / me.clock);
+        var factor = (finish - start) / count;
         for (i = count; i > 0; i--) {
-            data.push (start + (i*factor))
+            data.push(start + (i * factor))
         }
         inter.pop = function() {
-            if (data.length>0) {
+            if (data.length > 0) {
                 return data.pop();
             } else {
                 return finish;
@@ -64,7 +69,15 @@ var game = function(id) {
             e = that.entities[i];
 
             that.context.fillStyle = e.fillStyle || '#000000';
-            that.context.fillRect(e.x, e.y, e.w, e.h);
+            if (e.rotation) {
+                that.context.save();
+                that.context.translate(e.x + e.w * .5, e.y + e.h * .5);
+                that.context.rotate(e.rotation * me.degreeFactor);
+                that.context.fillRect(-e.w * .5, -e.h * .5, e.w, e.h);
+                that.context.restore();
+            } else {
+                that.context.fillRect(e.x, e.y, e.w, e.h);
+            }
         }
     }
 
@@ -72,19 +85,25 @@ var game = function(id) {
         for (i in that.entities) {
             e = that.entities[i];
             if (e.direction) {
-                e.x = me.wrap(e.x + e.direction.x || 0,me.canvas.width);
-                e.y = me.wrap(e.y + e.direction.y || 0,me.canvas.height);
+                e.x = me.wrap(e.x + e.direction.x || 0, me.canvas.width);
+                e.y = me.wrap(e.y + e.direction.y || 0, me.canvas.height);
             }
-            if (e.destination){
-                e.x = me.wrap(e.destination.x.pop());
-                e.y = me.wrap(e.destination.y.pop());
+            if (e.destination) {
+                if (e.destination.x) {
+                    e.x = me.wrap(e.destination.x.pop());
+                    e.y = me.wrap(e.destination.y.pop());
+                }
+                if (e.destination.rotation) {
+                    e.rotation = e.destination.rotation.pop();
+                }
+
             }
 
         }
         that.draw();
     }
 
-    me.wrap = function(val,max) {
+    me.wrap = function(val, max) {
         if (val < 0) {
             return max;
         }
@@ -96,11 +115,9 @@ var game = function(id) {
 
     me.debug = function() {
         var time = new Date();
-        that.context.fillText((time - me.startDate) / me.count, 20, 20);
-        that.context.fillText(me.count, 20, 40);
-        that.context.fillText(me.startDate, 20, 50);
-        that.context.fillText(time, 20, 60);
-        that.context.fillText((time - me.startDate), 20, 70);
+        that.context.fillText(1000 / ((time - me.startDate) / me.count) + ' fps', 20, 20);
+        that.context.fillText(me.count + ' frames ', 20, 40);
+
     }
 
 
