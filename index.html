@@ -40,11 +40,11 @@
     //});
     for (var i = 0; i < 500; i++) {
         var ent = g.entity({fillStyle:'#ff2222',x:300,y:300,w:rnd(10)+5,h:rnd(10)+5,rotation: rnd(360)});
-        ent.move_to(rnd(500),rnd(500),rnd(10));
-        ent.rotate_to(rnd(360),rnd(10));
+        ent.move_to({x:rnd(500), y:rnd(500), duration: rnd(10)});
+        ent.rotate_to({angle: rnd(360), duration: rnd(10)});
     }
-    var ent = g.entity({fillStyle:'#ff2222',x:300,y:300,w:50,h:50,rotation: 0});
-    ent.move_to(350,100,1);
+   // var ent = g.entity({fillStyle:'#ff2222',x:300,y:300,w:50,h:50,rotation: 0});
+   // ent.move_to({x:350,y:100,duration:1});
 
     document.addEventListener('keydown', kdown);
     document.addEventListener('keyup', kup);
@@ -55,16 +55,16 @@
         with (g.entities[0]) {
             switch (e.keyCode) {
                 case 37:
-                    move(-factor,0);
+                    move({x:-factor,y:0});
                     break;
                 case 38:
-                    move(0,-factor);
+                    move({x:0,y:-factor});
                     break
                 case 39:
-                    move(factor,0);
+                    move({x:factor,y:0});
                     break;
                 case 40:
-                    move(0,factor);
+                    move({x:0,y:factor});
                     break;
             }
         }

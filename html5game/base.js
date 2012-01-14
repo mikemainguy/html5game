@@ -4,7 +4,7 @@ var game = function(id) {
     var me = {};
     me.startDate = new Date();
     me.count = 0;
-    me.clock = 10;
+    me.clock = 4;
     me.canvas = document.getElementById(id);
 
     me.canvas.setAttribute('width', me.canvas.clientWidth);
@@ -67,19 +67,20 @@ var game = function(id) {
                     (dest.y && !dest.y.done) ||
                     (dest.rotation && !dest.rotation.done)
         }
-        data.move = function(x, y) {
-            data.direction = {x:x,y:y};
+
+
+        data.move = function(input) {
+            data.direction = input;
+        }
+
+        data.move_to = function(input) {
+            data.destination.x = me.interpolator({start: data.x, finish: input.x, duration: input.duration});
+            data.destination.y = me.interpolator({start: data.y, finish: input.y, duration: input.duration});
             me.tweens.push(data);
         }
 
-        data.move_to = function(x, y, speed) {
-            data.destination.x = me.interpolator(data.x, x, speed);
-            data.destination.y = me.interpolator(data.y, y, speed);
-            me.tweens.push(data);
-        }
-
-        data.rotate_to = function(new_angle, speed) {
-            data.destination.rotation = me.interpolator(data.rotation, new_angle, speed);
+        data.rotate_to = function(input) {
+            data.destination.rotation = me.interpolator({start: data.rotation, finish: input.angle, duration: input.duration});
             me.tweens.push(data);
         }
 
@@ -88,13 +89,14 @@ var game = function(id) {
     }
 
 
-    me.interpolator = function(start, finish, duration) {
+    me.interpolator = function(input) {
         var inter = {};
         inter.done = false;
-        var currentValue = start;
-        var endValue = finish;
-        var totalTicks = ((duration * 1000) / me.clock);
-        var increment = (finish - start) / totalTicks;
+        var currentValue = input.start;
+        var endValue = input.finish;
+
+        var totalTicks = ((input.duration * 1000) / me.clock);
+        var increment = (endValue - currentValue) / totalTicks;
         inter.length = function() {
             return Math.abs(endValue - currentValue);
         }
@@ -107,7 +109,6 @@ var game = function(id) {
                 inter.done = true;
 
             }
-
             return currentValue;
         }
         return inter;
@@ -117,7 +118,10 @@ var game = function(id) {
         that.clr();
         for (var i in that.entities) {
             var e = that.entities[i];
-
+            if (e.direction) {
+                e.x += e.direction.x;
+                e.y += e.direction.y;
+            }
             that.context.fillStyle = e.fillStyle || '#000000';
             that.context.save();
             that.context.translate(e.x + e.w * .5, e.y + e.h * .5);
@@ -146,15 +150,9 @@ var game = function(id) {
         var newTweens = [];
         for (var i in me.tweens) {
             var e = me.tweens[i];
-            if (e.direction) {
-                e.x = me.wrap(e.x + e.direction.x || 0, me.canvas.width);
-                e.y = me.wrap(e.y + e.direction.y || 0, me.canvas.height);
-            }
-
             if (e.destination) {
                 if (!e.destination.x.done) {
                     e.x = me.wrap(e.destination.x.pop());
-
                 }
                 if (!e.destination.y.done) {
                     e.y = me.wrap(e.destination.y.pop());
@@ -162,9 +160,8 @@ var game = function(id) {
                 if (e.destination.rotation) {
                     e.rotation = e.destination.rotation.pop();
                 }
-
             }
-            if (e.direction || e.destination.unfinished()) {
+            if (e.destination.unfinished()) {
                 newTweens.push(e);
             }
 
