@@ -4,11 +4,13 @@ var game = function(id) {
     var me = {};
     me.startDate = new Date();
     me.count = 0;
-    me.clock = 5;
+    me.clock = 1;
     me.canvas = document.getElementById(id);
+
     me.canvas.setAttribute('width', me.canvas.clientWidth);
     me.canvas.setAttribute('height', me.canvas.clientHeight);
-    me.degreeFactor = 3.14 / 180;
+
+    me.degreeFactor = Math.PI / 180;
 
     that.context = me.canvas.getContext('2d');
     that.entities = [];
@@ -22,8 +24,6 @@ var game = function(id) {
         //that.context.strokeStyle="#000";
         that.context.fillStyle = "#333333";
         me.count++;
-        me.debug();
-
 
         that.context.restore();
         that.context.font = "bold 12px sans-serif";
@@ -34,7 +34,25 @@ var game = function(id) {
         if (!data.destination) {
             data.destination = {};
         }
-
+        if (!data.drawType) {
+            data.drawType = 'rect';
+        }
+        if (data.path){
+            var min_x = 0;
+            var min_y = 0;
+            var max_x = 0;
+            var max_y = 0;
+            for (point in data.path) {
+                if (min_x > point.x) {min_x = point.x}
+                if (max_x < point.x) {max_x = point.x}
+                if (min_y > point.y) {min_y = point.y}
+                if (max_y < point.y) {max_y = point.y}
+            }
+            data.w = max_x - min_x;
+            data.h = max_y - min_y;
+            data.x = min_x;
+            data.y = min_y;
+        }
         data.move = function(x, y) {
             data.direction = {x:x,y:y};
         }
@@ -77,16 +95,27 @@ var game = function(id) {
             e = that.entities[i];
 
             that.context.fillStyle = e.fillStyle || '#000000';
-            if (e.rotation) {
-                that.context.save();
-                that.context.translate(e.x + e.w * .5, e.y + e.h * .5);
-                that.context.rotate(e.rotation * me.degreeFactor);
-                that.context.fillRect(-e.w * .5, -e.h * .5, e.w, e.h);
-                that.context.restore();
+            that.context.save();
+            that.context.translate(e.x + e.w * .5, e.y + e.h * .5);
+            that.context.rotate(e.rotation * me.degreeFactor);
+
+            if (e.path) {
+                that.context.beginPath();
+                that.context.moveTo(e.path[0].x, e.path[0].y);
+                for (p = 1; p < e.path.length; p++) {
+                    that.context.lineTo(e.path[p].x, e.path[p].y);
+                }
+                that.context.stroke();
+                that.context.fill();
+                that.context.closePath();
             } else {
-                that.context.fillRect(e.x, e.y, e.w, e.h);
+                that.context.fillRect(-e.w * .5, -e.h * .5, e.w, e.h);
             }
+            that.context.restore();
+
         }
+        me.debug();
+
     }
 
     that.animate = function() {
@@ -123,6 +152,8 @@ var game = function(id) {
 
     me.debug = function() {
         var time = new Date();
+        that.context.fillStyle = "#000000";
+
         that.context.fillText(1000 / ((time - me.startDate) / me.count) + ' fps', 20, 20);
         that.context.fillText(me.count + ' frames ', 20, 40);
 

@@ -35,9 +35,12 @@
     var rnd = function(start){
         return Math.floor(Math.random()*start);
     }
-    g.entity({fillStyle:'#ff0000',x:10,y:10,w:10,h:10});
-    for (i = 0; i < 10; i++) {
-        g.entity({fillStyle:'#222222',x:rnd(600),y:rnd(600),w:rnd(10),h:rnd(10),rotation: rnd(2)/10});
+    g.entity({fillStyle:'#ff0000',path: [{x:0,y:0},{x:10,y:10},{x:-10,y:10},{x:0,y:0}]
+
+    });
+    for (i = 0; i < 100; i++) {
+        g.entity({fillStyle:'#ff2222',x:rnd(600),y:rnd(600),w:rnd(10),h:rnd(10),rotation: rnd(2)/10});
+
     }
 
     document.addEventListener('keydown', kdown);
@@ -48,7 +51,7 @@
 
     function kdown(e) {
         document.title = e.keyCode;
-        var factor = 1.5;
+        var factor = 2;
         with (g.entities[0]) {
             switch (e.keyCode) {
                 case 37:
