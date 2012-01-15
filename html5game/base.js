@@ -1,3 +1,39 @@
+Number.prototype.sign = function() {
+    if (this > 0) {
+        return 1;
+    } else if (this < 0) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+Number.prototype.abs = function() {
+    return Math.abs(this);
+}
+
+Number.prototype.wrapped = function(min, max) {
+    if (this < min) {
+        return max;
+    }
+    if (this > max) {
+        return min;
+    }
+    return this;
+}
+
+
+Number.prototype.toward_zero = function(input) {
+    var minus = (this.abs() - input);
+    if (minus < 0) {
+        return 0;
+    } else {
+        return this.sign() * minus;
+    }
+
+}
+
+
 var game = function(id) {
 
     var that = {};
@@ -11,7 +47,7 @@ var game = function(id) {
     me.canvas.setAttribute('height', me.canvas.clientHeight);
 
     me.degreeFactor = Math.PI / 180;
-    me.tweens = [];
+    me.animations = [];
 
     that.context = me.canvas.getContext('2d');
     that.entities = [];
@@ -32,10 +68,9 @@ var game = function(id) {
 
 
     that.entity = function(data) {
+        data.drawType = data.drawType || 'rect';
+        data.decay = data.decay || 0;
 
-        if (!data.drawType) {
-            data.drawType = 'rect';
-        }
         if (data.path) {
             var min_x = 0;
             var min_y = 0;
@@ -60,28 +95,29 @@ var game = function(id) {
             data.x = min_x;
             data.y = min_y;
         }
-        data.destination = {};
-        data.destination.unfinished = function() {
-            var dest = data.destination;
-            return (dest.x && !dest.x.done) ||
-                    (dest.y && !dest.y.done) ||
-                    (dest.rotation && !dest.rotation.done)
+
+        data.moving = function() {
+            return (data.direction || data.destination);
         }
-
-
         data.move = function(input) {
+            if (!data.direction) {
+                me.animations.push(data);
+            }
             data.direction = input;
+
         }
 
         data.move_to = function(input) {
+            data.destination = data.destination || {};
             data.destination.x = me.interpolator({start: data.x, finish: input.x, duration: input.duration});
             data.destination.y = me.interpolator({start: data.y, finish: input.y, duration: input.duration});
-            me.tweens.push(data);
+            me.animations.push(data);
         }
 
         data.rotate_to = function(input) {
+            data.destination = data.destination || {};
             data.destination.rotation = me.interpolator({start: data.rotation, finish: input.angle, duration: input.duration});
-            me.tweens.push(data);
+            me.animations.push(data);
         }
 
         that.entities.push(data);
@@ -107,7 +143,6 @@ var game = function(id) {
                 currentValue += increment;
             } else {
                 inter.done = true;
-
             }
             return currentValue;
         }
@@ -118,10 +153,7 @@ var game = function(id) {
         that.clr();
         for (var i in that.entities) {
             var e = that.entities[i];
-            if (e.direction) {
-                e.x += e.direction.x;
-                e.y += e.direction.y;
-            }
+
             that.context.fillStyle = e.fillStyle || '#000000';
             that.context.save();
             that.context.translate(e.x + e.w * .5, e.y + e.h * .5);
@@ -145,41 +177,51 @@ var game = function(id) {
         me.debug();
 
     }
+    function unfinished(element) {
+        var dest = element;
+        return (dest.x && !dest.x.done) ||
+                (dest.y && !dest.y.done) ||
+                (dest.rotation && !dest.rotation.done)
+    }
 
     that.animate = function() {
+
         var newTweens = [];
-        for (var i in me.tweens) {
-            var e = me.tweens[i];
+        for (var i in me.animations) {
+            var e = me.animations[i];
+
             if (e.destination) {
-                if (!e.destination.x.done) {
-                    e.x = me.wrap(e.destination.x.pop());
+                if (e.destination.x && !e.destination.x.done) {
+                    e.x = e.destination.x.pop().wrapped(0,me.canvas.width);
                 }
-                if (!e.destination.y.done) {
-                    e.y = me.wrap(e.destination.y.pop());
+                if (e.destination.y && !e.destination.y.done) {
+                    e.y = e.destination.y.pop().wrapped(0,me.canvas.height);
                 }
                 if (e.destination.rotation) {
                     e.rotation = e.destination.rotation.pop();
                 }
+                if (unfinished(e.destination)) {
+                    newTweens.push(e);
+                } else {
+                    e.destination = null;
+                }
             }
-            if (e.destination.unfinished()) {
-                newTweens.push(e);
+            if (e.direction) {
+                e.x += e.direction.x;
+                e.direction.x = e.direction.x.toward_zero(e.decay);
+                e.y += e.direction.y;
+                e.direction.y = e.direction.y.toward_zero(e.decay);
+                if (e.direction.x.abs() > 0 || e.direction.y.abs() > 0) {
+                    newTweens.push(e);
+                } else {
+                    e.direction = null;
+                }
             }
-
-
         }
-        me.tweens = newTweens;
+        me.animations = newTweens;
         that.draw();
     }
 
-    me.wrap = function(val, max) {
-        if (val < 0) {
-            return max;
-        }
-        if (val > max) {
-            return 0;
-        }
-        return val;
-    }
 
     me.debug = function() {
         var time = new Date();
@@ -189,12 +231,15 @@ var game = function(id) {
         that.context.fillText(me.count + ' frames ', 20, line + 15);
         that.context.fillText(that.entities.length + ' entities ', 20, line + 30);
 
-        that.context.fillText(me.tweens.length + ' tweens ', 20, line + 45);
+        that.context.fillText(me.animations.length + 'animationss ', 20, line + 45);
         var total = 0.0;
-        for (var i in me.tweens) {
-            total += me.tweens[i].destination.x.length();
-            total += me.tweens[i].destination.y.length();
-            total += me.tweens[i].destination.rotation.length();
+        for (var i in me.animations) {
+            if (me.animations[i]) {
+                total += me.animations[i].destination.x.length();
+                total += me.animations[i].destination.y.length();
+                total += me.animations[i].destination.rotation.length();
+
+            }
 
         }
         that.context.fillText(total + ' tween details ', 20, line + 60);

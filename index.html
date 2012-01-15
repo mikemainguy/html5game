@@ -32,19 +32,21 @@
 </form>
 <script>
     var g = game('canvas');
-    var rnd = function(start){
-        return Math.floor(Math.random()*start);
+    var rnd = function(start) {
+        return Math.floor(Math.random() * start);
     }
-    g.entity({fillStyle:'#ff0000',path: [{x:0,y:0},{x:10,y:10},{x:-10,y:10},{x:0,y:0}]});
-
-    //});
+    g.entity({decay: .01, fillStyle:'#ff0000',path: [
+        {x:0,y:0},
+        {x:5,y:10},
+        {x:0,y:5},
+        {x:-5 , y:10},
+        {x:0,y:0}
+    ]});
     for (var i = 0; i < 500; i++) {
-        var ent = g.entity({fillStyle:'#ff2222',x:300,y:300,w:rnd(10)+5,h:rnd(10)+5,rotation: rnd(360)});
+        var ent = g.entity({fillStyle:'#ff2222',x:300,y:300,w:rnd(10) + 5,h:rnd(10) + 5,rotation: rnd(360)});
         ent.move_to({x:rnd(500), y:rnd(500), duration: rnd(10)});
         ent.rotate_to({angle: rnd(360), duration: rnd(10)});
     }
-   // var ent = g.entity({fillStyle:'#ff2222',x:300,y:300,w:50,h:50,rotation: 0});
-   // ent.move_to({x:350,y:100,duration:1});
 
     document.addEventListener('keydown', kdown);
     document.addEventListener('keyup', kup);
@@ -67,11 +69,12 @@
                     move({x:0,y:factor});
                     break;
             }
+
         }
 
     }
+
     function kup(e) {
-        g.entities[0].direction = null;
 
     }
 
