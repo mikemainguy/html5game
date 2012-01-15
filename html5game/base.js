@@ -38,6 +38,7 @@ var game = function(id) {
 
     var that = {};
     var me = {};
+    me.gravity = {x: 0, y: 0};
     me.startDate = new Date();
     me.count = 0;
     me.clock = 4;
@@ -51,7 +52,10 @@ var game = function(id) {
 
     that.context = me.canvas.getContext('2d');
     that.entities = [];
-
+    that.setGravity = function(input) {
+        me.gravity.x = input.x || 0;
+        me.gravity.y = input.y || 0;
+    }
     that.clr = function() {
         that.context.save();
         // Use the identity matrix while clearing the canvas
@@ -70,6 +74,7 @@ var game = function(id) {
     that.entity = function(data) {
         data.drawType = data.drawType || 'rect';
         data.decay = data.decay || 0;
+        data.gravity_effect = data.gravity_effect || 0;
 
         if (data.path) {
             var min_x = 0;
@@ -154,6 +159,9 @@ var game = function(id) {
         for (var i in that.entities) {
             var e = that.entities[i];
 
+            e.x += (me.gravity.x * e.gravity_effect);
+            e.y += (me.gravity.y * e.gravity_effect);
+
             that.context.fillStyle = e.fillStyle || '#000000';
             that.context.save();
             that.context.translate(e.x + e.w * .5, e.y + e.h * .5);
@@ -206,6 +214,7 @@ var game = function(id) {
                     e.destination = null;
                 }
             }
+
             if (e.direction) {
                 e.x += e.direction.x;
                 e.direction.x = e.direction.x.toward_zero(e.decay);
